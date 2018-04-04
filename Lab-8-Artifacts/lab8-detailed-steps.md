@@ -1,6 +1,6 @@
-# Lab 7 - Container Healthchecks - Detailed Steps
+# Container Healthchecks - Detailed Steps
 
-## 7.1	Update the task definition
+## x.1	Update the task definition
 
 Up to this point the ECS service scheduler relied on the Elastic Load Balancer (ELB) to report container health status and to restart any unhealthy containers. In this step, you will create a new revision of the Dogs task definition to include a Docker health checks. This health check will 
 
@@ -28,13 +28,13 @@ Up to this point the ECS service scheduler relied on the Elastic Load Balancer (
     
     5. In **Retries** enter: *3*
     
-    When the container starts it runs a curl command to test for the presence of localhost/dogs/1.jpg. Any response code other than a 200 is considered a failure. The test will timeout after 5 seconds, at which point it will wait for 30 seconds and try again. There will be a total of 3 attempts to execute this health check, for a commulative time of 90 seconds (3 * 20). At which point, the task will be marked as unhealthy, it will be removed from the service and replaced.
+When the task starts it runs a curl command, within the container, to test for a successful response to the request for http://localhost/dogs/1.jpg. Any response code other than a 200 (success) is considered a failure. The test will timeout after 5 seconds, at which point it will wait for 30 seconds and try again. There will be a total of 3 attempts to execute this health check, for a commulative time of 90 seconds (3 * 20). At which point, the task will be marked as unhealthy, it will be removed from the service and replaced.
 
 9. Click **Update**
 
 10. Click **Create**
 
-## 7.2	Update the service
+## x.2	Update the service
 
 The next step is to update the dogs service definition to use the latest revision of the task definition which includes the health check. 
 
@@ -62,7 +62,7 @@ The next step is to update the dogs service definition to use the latest revisio
 
 10.	Click **View Service**.
 
-## 7.3	Inject a bug
+## x.3	Inject a bug
 
 In this step, we will intentionally inject a fault in to the configuration of the Dogs application and observe container health checks helps us ensure that bugs have minimal impact on the availability of our applictions.
 
@@ -102,4 +102,6 @@ During the creation of the container image, this line is respinsible for fetchin
 
     2.	The status of each stage should change from No executions yet to **In progress**.
 
-## 7.4  Observe the deployment
+## x.4  Check the deployment
+
+1. Copy the value of the **LoadBalancerDNSName**, created by the **catsndogssetup** CloudFormation stack that was deployed at the start of the workshop, in to you address bar of your web browser.
