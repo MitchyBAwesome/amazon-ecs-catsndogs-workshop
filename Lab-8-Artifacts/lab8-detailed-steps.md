@@ -101,7 +101,5 @@ During the creation of the container image, this line is respinsible for fetchin
     1.	From the **All Pipelines** table, click the **CatsnDogsPipeline**, to monitor the progress of your pipeline.
 
     2.	The status of each stage should change from No executions yet to **In progress**.
-    
-
 
 ## 7.4  Observe the deployment
