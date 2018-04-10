@@ -2,7 +2,7 @@
 
 ## x.1	Update the task definition
 
-Up to this point the ECS service scheduler relied on the Elastic Load Balancer (ELB) to report container health status and to restart any unhealthy containers. In this step, you will create a new revision of the Dogs task definition to include a Docker health checks. This health check will 
+Up to this point the ECS service scheduler relied on the Elastic Load Balancer (ELB) to report container health status and to restart any unhealthy containers. In this step, you will create a new revision of the Dogs task definition to include a Docker health check.
 
 1. Sign-in to the AWS management console and open the Amazon ECS console at https://console.aws.amazon.com/ecs/.
 
@@ -10,25 +10,25 @@ Up to this point the ECS service scheduler relied on the Elastic Load Balancer (
 
 3. Select **dogs** from the list of task definitions.
 
-5. Select the most revcent revision of the **dogs** task definition.
+5. Select the most recent revision of the **dogs** task definition.
 
 6. Click **Create new revision**
 
 7. Under **Container Definitions** click on **dogs**.
 
 8. Under **HEALTHCHECK**:
-    
-    1. In **Command** enter: `[ "CMD-SHELL", "curl -f http://localhost/dogs/1.jpg || exit 1" ]`
-    
+
+    1. In **Command** enter: `[ "CMD-SHELL", "wget --spider http://localhost/dogs/1.jpg || exit 1" ]`
+
     2. In **Interval** enter: *30*
-    
+
     3. In **Timeout** enter: *5*
-  
-    4. In **Start period** enter: *0*
-    
+
+    4. In **Start period** enter: *1*
+
     5. In **Retries** enter: *3*
-    
-When the task starts it runs a curl command, within the container, to test for a successful response to the request for http://localhost/dogs/1.jpg. Any response code other than a 200 (success) is considered a failure. The test will timeout after 5 seconds, at which point it will wait for 30 seconds and try again. There will be a total of 3 attempts to execute this health check, for a commulative time of 90 seconds (3 * 20). At which point, the task will be marked as unhealthy, it will be removed from the service and replaced.
+
+When the task starts it runs a `wget --spider` command, within the container, to test for a successful response to the request for http://localhost/dogs/1.jpg. Any response code other than a 200 (success) is considered a failure. The test will timeout after 5 seconds, at which point it will wait for 30 seconds and try again. There will be a total of 3 attempts to execute this health check, for a commulative time of 90 seconds (3 * 20). At which point, the task will be marked as unhealthy, it will be removed from the service and replaced.
 
 9. Click **Update**
 
@@ -36,7 +36,7 @@ When the task starts it runs a curl command, within the container, to test for a
 
 ## x.2	Update the service
 
-The next step is to update the dogs service definition to use the latest revision of the task definition which includes the health check. 
+The next step is to update the dogs service definition to use the latest revision of the task definition which includes the health check.
 
 1. In the navigation pane choose **Clusters**.
 
@@ -49,8 +49,12 @@ The next step is to update the dogs service definition to use the latest revisio
 5.	In Configure service:
 
     1. In **Task definition**, choose the task definition you created in the earlier step.
-    
+
     2. In **Cluster**, choose the cluster **catsndogsECScluster**.
+
+    // Add something here about the maximum and minumum healthy percentages.
+
+    // Add something here about the health check grace period.
 
 6.	Click **Next step**.
 
@@ -78,11 +82,11 @@ In this step, we will intentionally inject a fault in to the configuration of th
 
 6. Run the command `nano Dockerfile` to edit the Dockerfile.
 
-7. Find the line which starts with `RUN aws --region` and add a comment out that line by adding a `#` before the word `RUN`. The line should look somehing like this: 
+7. Find the line which starts with `RUN aws --region` and add a comment out that line by adding a `#` before the word `RUN`. The line should look somehing like this:
 
     `# RUN aws --region us-west-2 s3 cp s3://catsndogs-assets/dogs-images /www/ --recursive`
-    
-During the creation of the container image, this line is respinsible for fetching the dog meme images from a source S3 bucket and writing them in to the local file system of the container image so that they can be served by the Dogs application. By commenting out this line, there will be no images written to the container image and as such, our Docker health check should fail.
+
+During the creation of the container image, this line is responsible for fetching the dog meme images from a source S3 bucket and writing them in to the local file system of the container image so that they can be served by the Dogs application. By commenting out this line, there will be no images written to the container image and as such, our Docker health check should fail.
 
 8. Within the nano editor press `ctrl + x` to exit the editor. When prompted type `Y` to confirm that the changes should be saved.
 
@@ -90,10 +94,10 @@ During the creation of the container image, this line is respinsible for fetchin
 
     1.	`git add Dockerfile`
 
-    2.	`git command -m ‘Injecting a failure’`
-    
+    2.	`git commit -m ‘Injecting a failure’`
+
     3.	`git push`
-    
+
 10.	Open the AWS management console, and open the **AWS CodePipeline** console at https://console.aws.amazon.com/codepipeline/.
 
 11.	Verify that the pipeline started:
@@ -105,3 +109,5 @@ During the creation of the container image, this line is respinsible for fetchin
 ## x.4  Check the deployment
 
 1. Copy the value of the **LoadBalancerDNSName**, created by the **catsndogssetup** CloudFormation stack that was deployed at the start of the workshop, in to you address bar of your web browser.
+
+// Investigating why the ECS deployment provider is not using the latest revision of the task definition when doing a service update.
