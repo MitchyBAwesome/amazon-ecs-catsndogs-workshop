@@ -82,7 +82,7 @@ In this step, we will intentionally inject a fault in to the configuration of th
 
 6. Run the command `nano Dockerfile` to edit the Dockerfile.
 
-7. Find the line which starts with `RUN aws --region` and add a comment out that line by adding a `#` before the word `RUN`. The line should look somehing like this:
+7. Find the line which starts with `RUN aws --region` and comment out that line by adding a `#` before the word `RUN`. The line should look somehing like this:
 
     `# RUN aws --region us-west-2 s3 cp s3://catsndogs-assets/dogs-images /www/ --recursive`
 
